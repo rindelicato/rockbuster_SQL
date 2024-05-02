@@ -1,0 +1,44 @@
+/*
+This SQL query first calculates the top 5 countries  
+based on customers count and showing the top paying customer count.  
+*/
+
+-- Common Table Expression (CTE) to calculate top 5 paying customers in specific cities
+WITH top_5_count_cte (customer_id, first_name, last_name, city, country) AS
+(SELECT
+    A. customer_id,
+    A. first_name,
+    A. last_name,
+    C. city,
+    D. country,
+SUM (E.amount) AS total_amount_paid
+FROM customer A
+INNER JOIN address B ON A.address_id = B.address_id
+INNER JOIN city C ON B.city_id = C.city_id
+INNER JOIN country D ON C.country_id = D.country_id
+INNER JOIN payment E ON A.customer_id = E.customer_id
+WHERE C. city IN ('Aurora', 'Acua', 'Citurs Heights', 'Iwaki', 'Ambattur',
+				 'Shanwei', 'So Leopoldo', 'Teboksary', 'Tianjin', 'Cianjur')
+GROUP BY 
+   A. customer_id,
+   A. first_name,
+   A. last_name,
+   C. city,
+   D. country
+ORDER BY total_amount_paid DESC 
+LIMIT 5)
+
+-- Main query to count all customers and top-paying customers per country
+SELECT 
+    D.country, 
+	COUNT(DISTINCT A.customer_id) AS all_customer_count, -- Count of all customers
+	COUNT(top_5_count_cte) AS top_customer_count  -- Count of top-paying customers from CT
+FROM customer A
+INNER JOIN address B ON A.address_id = B.address_id
+INNER JOIN city C ON B.city_id = C.city_id
+INNER JOIN country D ON C.country_id = D.country_id
+INNER JOIN payment E ON A.customer_id = E.customer_id
+LEFT JOIN top_5_count_cte ON A. customer_id = top_5_count_cte.customer_id
+GROUP BY D.country -- Grouping by country
+ORDER BY all_customer_count DESC -- Ordering by all customer count in descending order
+LIMIT 5; -- Limiting output to top 5 countries with the most customers
