@@ -1,0 +1,35 @@
+/*
+This SQL query retrieves customer information
+and total amount paid. 
+*/
+
+SELECT 
+    A. customer_id,
+	A. first_name,
+	A. last_name,
+	C. city,
+	D. country,
+SUM (E.amount) AS total_amount_paid
+
+-- From the customer, address, city, country, and payment tables
+FROM customer A
+INNER JOIN address B ON A.address_id = B.address_id -- Joining customer and address tables
+INNER JOIN city C ON B.city_id = C.city_id -- Joining address and city tables
+INNER JOIN country D ON C.country_id = D.country_id -- Joining city and country tables
+INNER JOIN payment E ON A.customer_id = E.customer_id  -- Joining customer and payment tables
+
+-- Filtering by specific cities
+WHERE C. city IN ('Aurora', 'Acua','Citurs Heights', 'Iwaki', 'Ambattur', 'Shanwei',
+					 'So Leopoldo', 'Teboksary', 'Tianjin', 'Cianjur')
+					 
+-- Grouping by customer ID, first name, last name, city, and country
+GROUP BY 
+   A. customer_id,
+   A. first_name,
+   A. last_name,
+   C. city,
+   D. country
+   
+-- Ordering & limiting the results by total amount paid in descending order
+ORDER BY total_amount_paid DESC
+LIMIT 5
