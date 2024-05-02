@@ -1,0 +1,32 @@
+/*
+This SQL query retrieves the top 10 cities by customer count within 
+specific countries. It calculates the number of customers in each city, 
+filters the results to include only cities from selected countries, 
+groups the data by country-city pairs.
+*/
+
+-- Selecting country and assign alias D, city with alias C, & cust count
+SELECT D.country, C. city, 
+COUNT (customer_id) AS customer_count
+
+-- Customer table with alias A
+FROM customer A 
+
+-- Joining customer and address tables using address_id
+INNER JOIN address B ON A.address_id = B.address_id 
+
+-- Joining city and country tables using country_id
+INNER JOIN city C ON B.city_id = C.city_id
+
+-- Joining city and country tables using country_id
+INNER JOIN country D ON C.country_id = D.country_id
+
+-- Filtering by specific countries
+WHERE D. country IN ('India', 'China','United States', 'Japan', 'Mexico', 'Brazil',
+					 'Russian Federation', 'Phillippines', 'Turkey', 'Indonesia')
+					 
+GROUP BY D.country, C.city
+ORDER BY customer_count DESC
+
+-- Limiting output to top 10 results
+LIMIT 10 
